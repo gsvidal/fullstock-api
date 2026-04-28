@@ -4,7 +4,7 @@ import eslintConfigPrettier from "eslint-config-prettier/flat";
 import { importX } from "eslint-plugin-import-x";
 import globals from "globals";
 import tseslint from "typescript-eslint";
- 
+
 export default defineConfig([
   globalIgnores(["dist/**"]),
   {
@@ -19,6 +19,10 @@ export default defineConfig([
   {
     rules: {
       eqeqeq: ["error", "always"],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { argsIgnorePattern: "^_" },
+      ],
       "import-x/order": ["error", { alphabetize: { order: "asc" } }],
       "import-x/no-named-as-default-member": "off",
     },
