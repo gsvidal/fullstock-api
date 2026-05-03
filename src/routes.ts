@@ -8,5 +8,6 @@ router.get("/", (_req, res) => {
 });
 
 router.get("/categories", categoryController.getCategories);
+router.get("/categories/:slug", categoryController.getCategory);
 
 export default router;
