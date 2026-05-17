@@ -1,0 +1,20 @@
+info:
+  name: get-category-by-slug
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{base_url}}/api/categories/:slug"
+  params:
+    - name: slug
+      value: polos
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+​

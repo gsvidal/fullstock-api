@@ -1,0 +1,21 @@
+info:
+  name: get-products-by-category
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:3000/api/categories/:slug/products
+  params:
+    - name: slug
+      value: |
+        tazas
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+​

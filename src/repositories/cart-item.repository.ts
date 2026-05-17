@@ -1,6 +1,6 @@
-import camelcaseKeys from "camelcase-keys";
+import camelCaseKeys from "camelcase-keys";
 import * as db from "../db/index.ts";
- 
+
 interface CartItemRow {
   id: number;
   cart_id: number;
@@ -9,9 +9,9 @@ interface CartItemRow {
   created_at: Date;
   updated_at: Date;
 }
- 
-export type CartItem = ReturnType<typeof camelcaseKeys<CartItemRow>>;
- 
+
+export type CartItem = ReturnType<typeof camelCaseKeys<CartItemRow>>;
+
 export async function create(
   cartId: number,
   productId: number,
@@ -23,10 +23,24 @@ export async function create(
      RETURNING *`,
     [cartId, productId, quantity],
   );
- 
+
   const row = result.rows[0];
- 
+
   if (row === undefined) throw new Error("INSERT did not return a row");
- 
-  return camelcaseKeys(row);
+
+  return camelCaseKeys(row);
+}
+
+export async function findByCartAndProduct(
+  cartId: number,
+  productId: number,
+): Promise<CartItem | null> {
+  const result = await db.query<CartItemRow>(
+    `
+    SELECT * FROM cart_items
+    WHERE cart_id = $1 AND product_id = $2;`,
+    [cartId, productId],
+  );
+
+  return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }

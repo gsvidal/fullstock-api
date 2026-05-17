@@ -1,0 +1,15 @@
+info:
+  name: create-cart-items
+  type: http
+
+http:
+  method: POST
+  url: "{{base_url}}/api/cart/items"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+​

@@ -200,6 +200,14 @@ ALTER TABLE ONLY public.products ALTER COLUMN id SET DEFAULT nextval('public.pro
 
 
 --
+-- Name: cart_items cart_items_cart_id_product_id_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cart_items
+    ADD CONSTRAINT cart_items_cart_id_product_id_unique UNIQUE (cart_id, product_id);
+
+
+--
 -- Name: cart_items cart_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -283,4 +291,5 @@ ALTER TABLE ONLY public.products
 INSERT INTO public.schema_migrations (version) VALUES
     ('20260429181816'),
     ('20260505025959'),
-    ('20260507221757');
+    ('20260507221757'),
+    ('20260517193823');
