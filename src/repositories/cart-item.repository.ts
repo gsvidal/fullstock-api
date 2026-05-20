@@ -44,3 +44,39 @@ export async function findByCartAndProduct(
 
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }
+
+export async function findById(id: number): Promise<CartItem | null> {
+  // Completa el cuerpo de la función.
+  const result = await db.query<CartItemRow>(
+    `SELECT * FROM cart_items
+    WHERE id = $1`,
+    [id],
+  );
+  return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
+}
+
+export async function updateQuantity(
+  id: number,
+  quantity: number,
+): Promise<CartItem> {
+  // Completa el cuerpo de la función.
+  const result = await db.query<CartItemRow>(
+    `UPDATE cart_items 
+  SET quantity = $1, updated_at = NOW() 
+  WHERE id = $2
+  RETURNING *`,
+    [quantity, id],
+  );
+  if (result.rows[0] === undefined)
+    throw new Error("Actualización no devolvio una fila");
+
+  return camelCaseKeys(result.rows[0]);
+}
+
+export async function remove(id: number): Promise<void> {
+  await db.query<CartItemRow>(
+    `DELETE FROM cart_items
+    WHERE id = $1`,
+    [id],
+  );
+}

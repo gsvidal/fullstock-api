@@ -20,7 +20,6 @@ export async function getProducts(
   res: Response,
 ) {
   const { minPrice, maxPrice } = req.query; // string | undefined
-  console.log({minPrice, maxPrice})
 
   const filters: Filters = {};
 

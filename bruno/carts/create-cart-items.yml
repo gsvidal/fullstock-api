@@ -1,11 +1,11 @@
 info:
   name: create-cart-items
   type: http
+  seq: 3
 
 http:
-  method: POST
-  url: "{{base_url}}/api/cart/items"
-  auth: inherit
+  method: post
+  url: ""
 
 settings:
   encodeUrl: true

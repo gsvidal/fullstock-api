@@ -29,3 +29,13 @@ export async function findById(id: number): Promise<Cart | null> {
   );
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }
+
+export async function touch(id: number): Promise<void> {
+  await db.query(
+    `
+    UPDATE carts
+    SET updated_at = NOW() 
+    WHERE id = $1`,
+    [id],
+  );
+}

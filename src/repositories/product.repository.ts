@@ -38,7 +38,6 @@ export async function getByCategorySlug(
     params.push(maxPrice);
     conditions.push(`p.price <= $${params.length}`);
   }
-  console.log({minPrice, maxPrice})
   const result = await db.query<ProductRow>(
     `SELECT p.* FROM products p
    JOIN categories c ON p.category_id = c.id

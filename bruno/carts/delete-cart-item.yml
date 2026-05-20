@@ -1,0 +1,19 @@
+info:
+  name: delete-cart-item
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{base_url}}/api/cart/items/:id"
+  params:
+    - name: id
+      value: "22"
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
