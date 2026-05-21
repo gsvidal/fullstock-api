@@ -10,7 +10,18 @@ interface CartItemRow {
   updated_at: Date;
 }
 
+interface CartItemWithProductRow extends CartItemRow {
+  title: string;
+  slug: string;
+  price: number;
+  img_src: string;
+}
+
 export type CartItem = ReturnType<typeof camelCaseKeys<CartItemRow>>;
+
+export type CartItemWithProduct = ReturnType<
+  typeof camelCaseKeys<CartItemWithProductRow>
+>;
 
 export async function create(
   cartId: number,
@@ -79,4 +90,19 @@ export async function remove(id: number): Promise<void> {
     WHERE id = $1`,
     [id],
   );
+}
+
+export async function getItemsWithProductByCartId(
+  cartId: number,
+): Promise<CartItemWithProduct[]> {
+  const result = await db.query<CartItemWithProductRow>(
+    `SELECT ci.*, p.title, p.slug, p.price, p.img_src
+     FROM cart_items ci
+     JOIN products p ON p.id = ci.product_id
+     WHERE ci.cart_id = $1
+     ORDER BY ci.created_at ASC`,
+    [cartId],
+  );
+
+  return camelCaseKeys(result.rows);
 }

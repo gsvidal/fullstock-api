@@ -1,11 +1,11 @@
 info:
-  name: create-cart-items
+  name: get-cart
   type: http
-  seq: 5
 
 http:
-  method: post
+  method: GET
   url: ""
+  auth: inherit
 
 settings:
   encodeUrl: true
