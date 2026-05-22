@@ -26,11 +26,7 @@ export async function createOrder(
   if (cart === null) throw new Error("No se encontró carrito");
   if (cart.items.length === 0) throw new ApiError(400, "El carrito está vacío");
 
-  const client = await db.pool.connect();
-
-  try {
-    await client.query("BEGIN");
-
+  const order = await db.withTransaction(async (client) => {
     const orderData = { ...shippingInfo, total: cart.totalPrice };
     const order = await orderRepository.createOrder(orderData, client);
 
@@ -53,12 +49,8 @@ export async function createOrder(
     await orderRepository.createOrderItems(items, client);
     await cartRepository.remove(cartId, client);
 
-    await client.query("COMMIT");
     return order;
-  } catch (err) {
-    await client.query("ROLLBACK");
-    throw err;
-  } finally {
-    client.release();
-  }
+  });
+
+  return order;
 }

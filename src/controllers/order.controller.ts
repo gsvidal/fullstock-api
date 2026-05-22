@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { ApiError } from "../lib/errors.ts";
+import { createOrderBodySchema } from "../schemas/order.schema.ts";
 import * as cartService from "../services/cart.service.ts";
 import * as orderService from "../services/order.service.ts";
 
@@ -20,7 +21,9 @@ export async function createOrder(req: Request, res: Response) {
     );
   }
 
-  const order = await orderService.createOrder(cartId, req.body);
+  const body = createOrderBodySchema.parse(req.body);
+
+  const order = await orderService.createOrder(cartId, body);
 
   delete req.session.cartId;
 
