@@ -1,4 +1,5 @@
 import camelCaseKeys from "camelcase-keys";
+import { type PoolClient } from "pg";
 import * as db from "../db/index.ts";
 
 interface CartRow {
@@ -38,4 +39,8 @@ export async function touch(id: number): Promise<void> {
     WHERE id = $1`,
     [id],
   );
+}
+
+export async function remove(id: number, client: PoolClient): Promise<void> {
+  await db.query("DELETE FROM carts WHERE id = $1", [id], client);
 }
