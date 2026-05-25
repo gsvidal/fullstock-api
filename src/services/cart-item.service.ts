@@ -2,6 +2,7 @@ import { ApiError } from "../lib/errors.ts";
 import * as cartItemRepository from "../repositories/cart-item.repository.ts";
 import * as cartRepository from "../repositories/cart.repository.ts";
 import * as productRepository from "../repositories/product.repository.ts";
+import type { CreateCartItemBody } from "../schemas/cart-item.schema.ts";
 
 export interface HydratedCartItem {
   id: number;
@@ -18,24 +19,23 @@ export interface HydratedCartItem {
 
 export async function createCartItem(
   cartId: number,
-  productId: number,
-  quantity: number,
+  data: CreateCartItemBody,
 ): Promise<cartItemRepository.CartItem> {
   const foundCartItem = await cartItemRepository.findByCartAndProduct(
     cartId,
-    productId,
+    data.productId,
   );
   if (foundCartItem) {
     throw new ApiError(409, "El producto ya existe en el carrito");
   }
 
-  const foundProduct = await productRepository.findById(productId)
+  const foundProduct = await productRepository.findById(data.productId);
 
-  if(!foundProduct) {
-    throw new ApiError(404, "El Producto no existe")
+  if (!foundProduct) {
+    throw new ApiError(404, "El Producto no existe");
   }
 
-  return cartItemRepository.create(cartId, productId, quantity);
+  return cartItemRepository.create({cartId, ...data});
 }
 
 export async function updateCartItemQuantity(

@@ -23,16 +23,16 @@ export type CartItemWithProduct = ReturnType<
   typeof camelCaseKeys<CartItemWithProductRow>
 >;
 
+type CreateCartItemData = Omit<CartItem, "id" | "createdAt" | "updatedAt">;
+
 export async function create(
-  cartId: number,
-  productId: number,
-  quantity: number,
+data: CreateCartItemData
 ): Promise<CartItem> {
   const result = await db.query<CartItemRow>(
     `INSERT INTO cart_items (cart_id, product_id, quantity)
      VALUES ($1, $2, $3)
      RETURNING *`,
-    [cartId, productId, quantity],
+    [data.cartId, data.productId, data.quantity],
   );
 
   const row = result.rows[0];
@@ -57,7 +57,6 @@ export async function findByCartAndProduct(
 }
 
 export async function findById(id: number): Promise<CartItem | null> {
-  // Completa el cuerpo de la función.
   const result = await db.query<CartItemRow>(
     `SELECT * FROM cart_items
     WHERE id = $1`,
@@ -70,7 +69,6 @@ export async function updateQuantity(
   id: number,
   quantity: number,
 ): Promise<CartItem> {
-  // Completa el cuerpo de la función.
   const result = await db.query<CartItemRow>(
     `UPDATE cart_items 
   SET quantity = $1, updated_at = NOW() 

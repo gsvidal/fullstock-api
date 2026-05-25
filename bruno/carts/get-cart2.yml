@@ -1,11 +1,11 @@
 info:
-  name: get-cart
+  name: get-cart2
   type: http
+  seq: 5
 
 http:
-  method: GET
+  method: get
   url: ""
-  auth: inherit
 
 settings:
   encodeUrl: true

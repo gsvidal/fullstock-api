@@ -1,10 +1,10 @@
-import * as productController from "../controllers/product.controller.ts";
 import type { CategorySlug } from "../repositories/category.repository.ts";
 import * as productRepository from "../repositories/product.repository.ts";
+import type { GetProductsQuery } from "../schemas/product.schema.ts";
 
 export async function getProductsByCategory(
   slug: CategorySlug,
-  filters: productController.Filters
+  filters: GetProductsQuery,
 ): Promise<productRepository.Product[]> {
   return productRepository.getByCategorySlug(slug, filters);
 }

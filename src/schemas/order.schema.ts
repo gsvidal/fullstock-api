@@ -1,5 +1,5 @@
 import * as z from "zod";
- 
+
 export const createOrderBodySchema = z.object({
   email: z.email(),
   firstName: z.string().min(1),
@@ -12,5 +12,7 @@ export const createOrderBodySchema = z.object({
   zipCode: z.string().min(1),
   phone: z.string().min(1),
 });
- 
+
+
+
 export type CreateOrderBody = z.infer<typeof createOrderBodySchema>;

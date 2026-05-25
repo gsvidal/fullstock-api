@@ -1,36 +1,22 @@
 import type { Request, Response } from "express";
 import { ApiError } from "../lib/errors.ts";
-import type { CategorySlug } from "../repositories/category.repository.ts";
-import type { ProductSlug } from "../repositories/product.repository.ts";
+import { slugParamSchema } from "../schemas/params.schema.ts";
+import { type GetProductsQuery, getProductsQuerySchema } from "../schemas/product.schema.ts";
 import * as categoryService from "../services/category.service.ts";
 import * as productService from "../services/product.service.ts";
 
-export interface Filters {
-  minPrice?: number;
-  maxPrice?: number;
-}
-
 export async function getProducts(
-  req: Request<
-    { slug: CategorySlug },
-    unknown,
-    unknown,
-    { minPrice?: string; maxPrice?: string }
-  >,
+  req: Request,
   res: Response,
 ) {
-  const { minPrice, maxPrice } = req.query; // string | undefined
+  const { slug } = slugParamSchema.parse(req.params);
+  const { minPrice, maxPrice } = getProductsQuerySchema.parse(req.query);
 
-  const filters: Filters = {};
+  const filters: GetProductsQuery = {};
 
-  function isNumericString(input: string | undefined) {
-    return input !== undefined && input !== '' && !isNaN(Number(input));
-  }
+  filters.minPrice = minPrice; 
+  filters.maxPrice = maxPrice; 
 
-  if (isNumericString(minPrice)) filters.minPrice = Number(minPrice);
-  if (isNumericString(maxPrice)) filters.maxPrice = Number(maxPrice);
-
-  const { slug } = req.params;
   const category = await categoryService.getCategory(slug);
   if (!category) {
     throw new ApiError(404, "Categoria no encontrada");
@@ -42,10 +28,10 @@ export async function getProducts(
 }
 
 export async function getProduct(
-  req: Request<{ slug: ProductSlug }>,
+  req: Request,
   res: Response,
 ): Promise<void> {
-  const { slug } = req.params;
+  const { slug } = slugParamSchema.parse(req.params);
   const product = await productService.getProduct(slug);
   if (!product) {
     throw new ApiError(404, "El producto no existe");

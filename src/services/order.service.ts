@@ -2,20 +2,8 @@ import * as db from "../db/index.ts";
 import { ApiError } from "../lib/errors.ts";
 import * as cartRepository from "../repositories/cart.repository.ts";
 import * as orderRepository from "../repositories/order.repository.ts";
+import type { CreateOrderBody } from "../schemas/order.schema.ts";
 import * as cartService from "../services/cart.service.ts";
-
-type CreateOrderBody = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  company: string | null;
-  address: string;
-  city: string;
-  country: string;
-  region: string;
-  zipCode: string;
-  phone: string;
-};
 
 export async function createOrder(
   cartId: number,

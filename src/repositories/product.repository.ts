@@ -1,6 +1,6 @@
 import camelCaseKeys from "camelcase-keys";
-import * as productController from "../controllers/product.controller.ts";
 import * as db from "../db/index.ts";
+import type { GetProductsQuery } from "../schemas/product.schema.ts";
 import type { CategorySlug } from "./category.repository.ts";
 
 export interface ProductRow {
@@ -22,19 +22,19 @@ export type ProductSlug = ProductRow["slug"];
 
 export async function getByCategorySlug(
   slug: CategorySlug,
-  filters: productController.Filters,
+  filters: GetProductsQuery,
 ): Promise<Product[]> {
   const params: (string | number)[] = [slug];
   const conditions: string[] = ["c.slug = $1"];
 
   const { minPrice, maxPrice } = filters;
- 
-  if (minPrice !== undefined && !isNaN(minPrice)) {
+
+  if (minPrice !== undefined) {
     params.push(minPrice);
     conditions.push(`p.price >= $${params.length}`);
   }
 
-  if (maxPrice !== undefined && !isNaN(maxPrice)) {
+  if (maxPrice !== undefined) {
     params.push(maxPrice);
     conditions.push(`p.price <= $${params.length}`);
   }
@@ -63,9 +63,8 @@ export async function findById(id: number): Promise<Product | null> {
     `
     SELECT * FROM products
     WHERE id = $1;
-    `
-    , 
-    [id]
-  )
+    `,
+    [id],
+  );
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }

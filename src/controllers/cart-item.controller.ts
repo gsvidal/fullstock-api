@@ -1,23 +1,12 @@
 import type { Request, Response } from "express";
 import { ApiError } from "../lib/errors.ts";
+import { createCartItemBodySchema, updateCartItemBodySchema } from "../schemas/cart-item.schema.ts";
+import { idParamSchema } from "../schemas/params.schema.ts";
 import * as cartItemService from "../services/cart-item.service.ts";
 import * as cartService from "../services/cart.service.ts";
 
-export async function createCartItem(
-  req: Request<object, unknown, { productId?: unknown; quantity?: unknown }>,
-  res: Response,
-) {
-  const { productId, quantity } = req.body;
-
-  if (typeof productId !== "number") {
-    throw new ApiError(400, "productId es requerido y debe ser un número");
-  }
-  if (typeof quantity !== "number" || quantity < 1) {
-    throw new ApiError(
-      400,
-      "quantity es requerido y debe ser un número positivo",
-    );
-  }
+export async function createCartItem(req: Request, res: Response) {
+  const { productId, quantity } = createCartItemBodySchema.parse(req.body);
 
   let cartId: number;
 
@@ -34,19 +23,15 @@ export async function createCartItem(
     cartId = cart.id;
   }
 
-  const item = await cartItemService.createCartItem(
-    cartId,
+  const item = await cartItemService.createCartItem(cartId, {
     productId,
     quantity,
-  );
+  });
 
   res.status(201).json({ data: item });
 }
 
-export async function updateCartItem(
-  req: Request<{ id: string }, unknown, { quantity?: unknown }>,
-  res: Response,
-) {
+export async function updateCartItem(req: Request, res: Response) {
   const cartId = req.session.cartId;
 
   if (cartId === undefined) {
@@ -59,20 +44,9 @@ export async function updateCartItem(
     throw new ApiError(409, "El carrito de la sesión ya no existe");
   }
 
-  const id = Number(req.params.id);
+  const { id } = idParamSchema.parse(req.params);
 
-  if (!Number.isInteger(id) || id < 1) {
-    throw new ApiError(400, "id debe ser un número");
-  }
-
-  const quantity = Number(req.body.quantity);
-
-  if (!Number.isInteger(quantity) || id < 1) {
-    throw new ApiError(
-      400,
-      "quantity es requerido y debe ser un numero positivo",
-    );
-  }
+  const { quantity } = updateCartItemBodySchema.parse(req.body);
 
   const item = await cartItemService.updateCartItemQuantity(
     cartId,
@@ -83,10 +57,7 @@ export async function updateCartItem(
   res.status(200).json({ status: "success", data: item });
 }
 
-export async function deleteCartItem(
-  req: Request<{ id: string }>,
-  res: Response,
-) {
+export async function deleteCartItem(req: Request, res: Response) {
   const cartId = req.session.cartId;
 
   if (cartId === undefined) {
@@ -99,11 +70,7 @@ export async function deleteCartItem(
     throw new ApiError(409, "El carrito de la sesión ya no existe");
   }
 
-  const id = Number(req.params.id);
-
-  if (!Number.isInteger(id) || id < 1) {
-    throw new ApiError(400, "id debe ser un número");
-  }
+  const { id } = idParamSchema.parse(req.params);
 
   await cartItemService.deleteCartItem(cartId, id);
 
