@@ -1,7 +1,8 @@
 import { Pool, type PoolClient, type QueryResultRow } from "pg";
+import {env} from "../env.ts"
 
 export const pool = new Pool({
-  connectionString: process.env["DATABASE_URL"],
+  connectionString: env.DATABASE_URL
 });
 
 export function query<T extends QueryResultRow>(
