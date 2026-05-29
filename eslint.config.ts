@@ -21,7 +21,7 @@ export default defineConfig([
       eqeqeq: ["error", "always"],
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { argsIgnorePattern: "^_" },
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
       "import-x/order": ["error", { alphabetize: { order: "asc" } }],
       "import-x/no-named-as-default-member": "off",
