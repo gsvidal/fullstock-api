@@ -35,4 +35,6 @@ router.post("/sessions", sessionController.createSession);
 
 router.delete("/sessions", sessionController.deleteSession);
 
+router.get("/users/me", userController.getCurrentUser);
+
 export default router;

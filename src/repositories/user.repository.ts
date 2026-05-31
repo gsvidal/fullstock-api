@@ -42,3 +42,12 @@ export async function create(email: string, password: string): Promise<User> {
 
   return camelCaseKeys(row);
 }
+
+export async function findById(id: number): Promise<User | null> {
+  const result = await db.query<UserRow>(
+    "SELECT * FROM users WHERE id = $1",
+    [id],
+  );
+ 
+  return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
+}
