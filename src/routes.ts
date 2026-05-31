@@ -4,8 +4,8 @@ import * as cartController from "./controllers/cart.controller.ts";
 import * as categoryController from "./controllers/category.controller.ts";
 import * as orderController from "./controllers/order.controller.ts";
 import * as productController from "./controllers/product.controller.ts";
-import * as userController from "./controllers/user.controller.ts";
 import * as sessionController from "./controllers/session.controller.ts";
+import * as userController from "./controllers/user.controller.ts";
 
 const router = Router();
 
@@ -32,5 +32,7 @@ router.post("/orders", orderController.createOrder);
 router.post("/users", userController.createUser);
 
 router.post("/sessions", sessionController.createSession);
+
+router.delete("/sessions", sessionController.deleteSession);
 
 export default router;
