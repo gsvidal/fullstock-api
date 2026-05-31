@@ -63,7 +63,8 @@ ALTER SEQUENCE public.cart_items_id_seq OWNED BY public.cart_items.id;
 CREATE TABLE public.carts (
     id integer NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    user_id integer
 );
 
 
@@ -371,6 +372,14 @@ ALTER TABLE ONLY public.carts
 
 
 --
+-- Name: carts carts_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.carts
+    ADD CONSTRAINT carts_user_id_key UNIQUE (user_id);
+
+
+--
 -- Name: categories categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -466,6 +475,14 @@ ALTER TABLE ONLY public.cart_items
 
 
 --
+-- Name: carts carts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.carts
+    ADD CONSTRAINT carts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: order_items order_items_order_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -505,4 +522,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260517193823'),
     ('20260521225252'),
     ('20260524212753'),
-    ('20260528171104');
+    ('20260528171104'),
+    ('20260531161123');

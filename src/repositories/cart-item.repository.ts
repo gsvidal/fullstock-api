@@ -1,4 +1,5 @@
 import camelCaseKeys from "camelcase-keys";
+import { type PoolClient } from "pg";
 import * as db from "../db/index.ts";
 
 interface CartItemRow {
@@ -25,9 +26,7 @@ export type CartItemWithProduct = ReturnType<
 
 type CreateCartItemData = Omit<CartItem, "id" | "createdAt" | "updatedAt">;
 
-export async function create(
-data: CreateCartItemData
-): Promise<CartItem> {
+export async function create(data: CreateCartItemData): Promise<CartItem> {
   const result = await db.query<CartItemRow>(
     `INSERT INTO cart_items (cart_id, product_id, quantity)
      VALUES ($1, $2, $3)
@@ -45,12 +44,14 @@ data: CreateCartItemData
 export async function findByCartAndProduct(
   cartId: number,
   productId: number,
+  client?: PoolClient,
 ): Promise<CartItem | null> {
   const result = await db.query<CartItemRow>(
     `
     SELECT * FROM cart_items
     WHERE cart_id = $1 AND product_id = $2;`,
     [cartId, productId],
+    client,
   );
 
   return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
@@ -68,6 +69,7 @@ export async function findById(id: number): Promise<CartItem | null> {
 export async function updateQuantity(
   id: number,
   quantity: number,
+  client?: PoolClient,
 ): Promise<CartItem> {
   const result = await db.query<CartItemRow>(
     `UPDATE cart_items 
@@ -75,6 +77,7 @@ export async function updateQuantity(
   WHERE id = $2
   RETURNING *`,
     [quantity, id],
+    client,
   );
   if (result.rows[0] === undefined)
     throw new Error("Actualización no devolvio una fila");
@@ -100,6 +103,31 @@ export async function getItemsWithProductByCartId(
      WHERE ci.cart_id = $1
      ORDER BY ci.created_at ASC`,
     [cartId],
+  );
+
+  return camelCaseKeys(result.rows);
+}
+
+export async function moveToCart(
+  id: number,
+  cartId: number,
+  client?: PoolClient,
+): Promise<void> {
+  await db.query(
+    "UPDATE cart_items SET cart_id = $1 WHERE id = $2",
+    [cartId, id],
+    client,
+  );
+}
+
+export async function getByCartId(
+  cartId: number,
+  client?: PoolClient,
+): Promise<CartItem[]> {
+  const result = await db.query<CartItemRow>(
+    "SELECT * FROM cart_items WHERE cart_id = $1",
+    [cartId],
+    client,
   );
 
   return camelCaseKeys(result.rows);

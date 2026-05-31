@@ -4,15 +4,17 @@ import * as db from "../db/index.ts";
 
 interface CartRow {
   id: number;
+  user_id: number | null;
   created_at: Date;
   updated_at: Date;
 }
 
 export type Cart = ReturnType<typeof camelCaseKeys<CartRow>>;
 
-export async function create(): Promise<Cart> {
+export async function create(userId?: number): Promise<Cart> {
   const result = await db.query<CartRow>(
-    "INSERT INTO carts DEFAULT VALUES RETURNING *",
+    "INSERT INTO carts (user_id) VALUES ($1) RETURNING *",
+    [userId ?? null],
   );
 
   const row = result.rows[0];
@@ -43,4 +45,23 @@ export async function touch(id: number): Promise<void> {
 
 export async function remove(id: number, client: PoolClient): Promise<void> {
   await db.query("DELETE FROM carts WHERE id = $1", [id], client);
+}
+
+export async function linkToUser(
+  cartId: number,
+  userId: number,
+): Promise<void> {
+  await db.query("UPDATE carts SET user_id = $1 WHERE id = $2", [
+    userId,
+    cartId,
+  ]);
+}
+
+export async function findByUserId(userId: number): Promise<Cart | null> {
+  const result = await db.query<CartRow>(
+    "SELECT * FROM carts WHERE user_id = $1",
+    [userId],
+  );
+
+  return result.rows[0] !== undefined ? camelCaseKeys(result.rows[0]) : null;
 }

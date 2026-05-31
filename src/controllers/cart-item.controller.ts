@@ -18,7 +18,7 @@ export async function createCartItem(req: Request, res: Response) {
     }
     cartId = cart.id;
   } else {
-    const cart = await cartService.createCart();
+    const cart = await cartService.createCart(req.session.userId);
     req.session.cartId = cart.id;
     cartId = cart.id;
   }

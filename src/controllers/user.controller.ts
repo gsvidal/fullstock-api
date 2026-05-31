@@ -2,6 +2,7 @@ import { type Request, type Response } from "express";
 import { ApiError } from "../lib/errors.ts";
 import { SESSION_COOKIE_NAME, destroySession } from "../lib/session.ts";
 import { registerSchemaBody } from "../schemas/auth.schema.ts";
+import * as cartService from "../services/cart.service.ts";
 import * as userService from "../services/user.service.ts";
 
 export async function createUser(req: Request, res: Response) {
@@ -10,6 +11,11 @@ export async function createUser(req: Request, res: Response) {
   const user = await userService.createUser(email, password);
 
   req.session.userId = user.id;
+
+  const cartId = await cartService.resolveCartId(req.session.cartId, user.id);
+  if (cartId !== undefined) {
+    req.session.cartId = cartId;
+  }
 
   res.status(201).json({ data: user });
 }
