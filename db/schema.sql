@@ -182,6 +182,7 @@ CREATE TABLE public.orders (
     status text DEFAULT 'pending'::text NOT NULL,
     created_at timestamp without time zone DEFAULT now() NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    user_id integer,
     CONSTRAINT orders_total_check CHECK ((total >= 0))
 );
 
@@ -499,6 +500,14 @@ ALTER TABLE ONLY public.order_items
 
 
 --
+-- Name: orders orders_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.orders
+    ADD CONSTRAINT orders_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: products products_category_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -523,4 +532,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260521225252'),
     ('20260524212753'),
     ('20260528171104'),
-    ('20260531161123');
+    ('20260531161123'),
+    ('20260531174624');

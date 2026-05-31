@@ -49,16 +49,16 @@ export async function resolveCartId(
   userId: number,
 ): Promise<number | undefined> {
   const userCart = await cartRepository.findByUserId(userId);
- 
+
   if (visitorCartId === undefined) {
     return userCart?.id;
   }
- 
+
   if (userCart === null) {
     await cartRepository.linkToUser(visitorCartId, userId);
     return visitorCartId;
   }
- 
+
   await mergeVisitorCartIntoUserCart(visitorCartId, userCart.id);
   return userCart.id;
 }

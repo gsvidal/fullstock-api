@@ -20,21 +20,18 @@ router.get("/categories/:slug/products", productController.getProducts);
 router.get("/products/:slug", productController.getProduct);
 
 router.post("/cart/items", cartItemController.createCartItem);
-
 router.patch("/cart/items/:id", cartItemController.updateCartItem);
-
 router.delete("/cart/items/:id", cartItemController.deleteCartItem);
 
 router.get("/cart", cartController.getCart);
 
 router.post("/orders", orderController.createOrder);
+router.get("/orders/:id", orderController.getOrder);
 
 router.post("/users", userController.createUser);
+router.get("/users/me", userController.getCurrentUser);
 
 router.post("/sessions", sessionController.createSession);
-
 router.delete("/sessions", sessionController.deleteSession);
-
-router.get("/users/me", userController.getCurrentUser);
 
 export default router;
