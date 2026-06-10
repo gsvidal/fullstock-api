@@ -1,6 +1,10 @@
 import type { Request, Response } from "express";
+import { requireCart } from "../guards/cart.guard.ts";
 import { ApiError } from "../lib/errors.ts";
-import { createCartItemBodySchema, updateCartItemBodySchema } from "../schemas/cart-item.schema.ts";
+import {
+  createCartItemBodySchema,
+  updateCartItemBodySchema,
+} from "../schemas/cart-item.schema.ts";
 import { idParamSchema } from "../schemas/params.schema.ts";
 import * as cartItemService from "../services/cart-item.service.ts";
 import * as cartService from "../services/cart.service.ts";
@@ -8,22 +12,20 @@ import * as cartService from "../services/cart.service.ts";
 export async function createCartItem(req: Request, res: Response) {
   const { productId, quantity } = createCartItemBodySchema.parse(req.body);
 
-  let cartId: number;
+  let cart;
 
   if (req.session.cartId !== undefined) {
-    const cart = await cartService.getCart(req.session.cartId);
+    cart = await requireCart(req)
     if (cart === null) {
       delete req.session.cartId;
       throw new ApiError(409, "El carrito de la sesión ya no existe");
     }
-    cartId = cart.id;
   } else {
-    const cart = await cartService.createCart(req.session.userId);
+    cart = await cartService.createCart(req.session.userId);
     req.session.cartId = cart.id;
-    cartId = cart.id;
   }
 
-  const item = await cartItemService.createCartItem(cartId, {
+  const item = await cartItemService.createCartItem(cart.id, {
     productId,
     quantity,
   });
@@ -32,24 +34,14 @@ export async function createCartItem(req: Request, res: Response) {
 }
 
 export async function updateCartItem(req: Request, res: Response) {
-  const cartId = req.session.cartId;
-
-  if (cartId === undefined) {
-    delete req.session.cartId;
-    throw new ApiError(404, "El carrito no existe");
-  }
-  const cart = cartService.getCart(cartId);
-
-  if (cart === null) {
-    throw new ApiError(409, "El carrito de la sesión ya no existe");
-  }
+  const cart = await requireCart(req);
 
   const { id } = idParamSchema.parse(req.params);
 
   const { quantity } = updateCartItemBodySchema.parse(req.body);
 
   const item = await cartItemService.updateCartItemQuantity(
-    cartId,
+    cart.id,
     id,
     quantity,
   );
@@ -58,21 +50,11 @@ export async function updateCartItem(req: Request, res: Response) {
 }
 
 export async function deleteCartItem(req: Request, res: Response) {
-  const cartId = req.session.cartId;
-
-  if (cartId === undefined) {
-    delete req.session.cartId;
-    throw new ApiError(404, "El carrito no existe");
-  }
-  const cart = cartService.getCart(cartId);
-
-  if (cart === null) {
-    throw new ApiError(409, "El carrito de la sesión ya no existe");
-  }
+  const cart = await requireCart(req);
 
   const { id } = idParamSchema.parse(req.params);
 
-  await cartItemService.deleteCartItem(cartId, id);
+  await cartItemService.deleteCartItem(cart.id, id);
 
   res.status(204);
 }
